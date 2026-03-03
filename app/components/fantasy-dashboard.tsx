@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -32,44 +33,45 @@ export default async function FantasyDashboard({
   const live = params?.live === "true";
 
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-background">
-        {/* Top Bar / Controls */}
-        <Filters
-          initialWeek={1}
-          initialTeam="my-team"
-          initialRisk={50}
-          initialLiveOnly={live}
-        />
-        {/* Content */}
-        <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6 lg:py-8">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* LEFT COLUMN */}
-            <div className="space-y-6 lg:col-span-2">
-              {/* Win Probability Grid */}
-              <Section
-                title="Win Probability"
-                icon={<ChartPie className="h-4 w-4" />}
-              >
-                <WinProbabilityChart
-                  week={week}
-                  teamId={teamId}
-                  risk={risk}
-                  live={live}
-                />
-              </Section>
+    <ErrorBoundary>
+      <TooltipProvider>
+        <div className="min-h-screen bg-background">
+          {/* Top Bar / Controls */}
+          <Filters
+            initialWeek={1}
+            initialTeam="my-team"
+            initialRisk={50}
+            initialLiveOnly={live}
+          />
+          {/* Content */}
+          <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6 lg:py-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {/* LEFT COLUMN */}
+              <div className="space-y-6 lg:col-span-2">
+                {/* Win Probability Grid */}
+                <Section
+                  title="Win Probability"
+                  icon={<ChartPie className="h-4 w-4" />}
+                >
+                  <WinProbabilityChart
+                    week={week}
+                    teamId={teamId}
+                    risk={risk}
+                    live={live}
+                  />
+                </Section>
 
-              {/* Matchup Table */}
-              <Section title="Matchups" icon={<Table2 className="h-4 w-4" />}>
-                <MatchupTable week={week} />
-              </Section>
+                {/* Matchup Table */}
+                <Section title="Matchups" icon={<Table2 className="h-4 w-4" />}>
+                  <MatchupTable week={week} />
+                </Section>
 
-              <Section
-                title="Season Projections"
-                icon={<LineChart className="h-4 w-4" />}
-              >
-                <ProjectionsChart />
-                {/* <Tabs defaultValue="projections">
+                <Section
+                  title="Season Projections"
+                  icon={<LineChart className="h-4 w-4" />}
+                >
+                  <ProjectionsChart />
+                  {/* <Tabs defaultValue="projections">
                   <TabsList>
                     <TabsTrigger value="projections" className="gap-2">
                       <TrendingUp className="h-4 w-4" /> Projections
@@ -103,78 +105,78 @@ export default async function FantasyDashboard({
                     />
                   </TabsContent>
                 </Tabs> */}
-              </Section>
-            </div>
+                </Section>
+              </div>
 
-            {/* RIGHT COLUMN */}
-            <div className="space-y-6">
-              {/* AI Coach Summary */}
-              <CoachBriefing
-                week={week}
-                teamId={teamId}
-                risk={risk}
-                live={live}
-              />
+              {/* RIGHT COLUMN */}
+              <div className="space-y-6">
+                {/* AI Coach Summary */}
+                <CoachBriefing
+                  week={week}
+                  teamId={teamId}
+                  risk={risk}
+                  live={live}
+                />
 
-              {/* Start/Sit Optimizer */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <ListChecks className="h-4 w-4" /> Start/Sit Optimizer
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-3">
-                    <Input placeholder="e.g., Swap WR3? Add bench RB?" />
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Shuffle className="h-4 w-4" /> AI recommends:{" "}
-                      <span className="font-medium text-foreground">
-                        WR X → FLEX, RB Y → Bench
-                      </span>
+                {/* Start/Sit Optimizer */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <ListChecks className="h-4 w-4" /> Start/Sit Optimizer
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 gap-3">
+                      <Input placeholder="e.g., Swap WR3? Add bench RB?" />
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Shuffle className="h-4 w-4" /> AI recommends:{" "}
+                        <span className="font-medium text-foreground">
+                          WR X → FLEX, RB Y → Bench
+                        </span>
+                      </div>
+                      <Button size="sm" className="self-start">
+                        Optimize Lineup
+                      </Button>
                     </div>
-                    <Button size="sm" className="self-start">
-                      Optimize Lineup
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
-              {/* Waiver Wire */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Users className="h-4 w-4" /> Waiver Wire Targets
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-56">
-                    <div className="space-y-3 text-sm">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between rounded-lg border p-2"
-                        >
-                          <div className="flex flex-col">
-                            <span className="font-medium">Player {i} · WR</span>
-                            <span className="text-xs text-muted-foreground">
-                              Next week: 12.4 proj · ROS: 8.1 avg
-                            </span>
+                {/* Waiver Wire */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Users className="h-4 w-4" /> Waiver Wire Targets
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-56">
+                      <div className="space-y-3 text-sm">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between rounded-lg border p-2"
+                          >
+                            <div className="flex flex-col">
+                              <span className="font-medium">Player {i} · WR</span>
+                              <span className="text-xs text-muted-foreground">
+                                Next week: 12.4 proj · ROS: 8.1 avg
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline">Fit +72%</Badge>
+                              <Button size="sm" variant="secondary">
+                                Claim
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">Fit +72%</Badge>
-                            <Button size="sm" variant="secondary">
-                              Claim
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
 
-              {/* Trade Analyzer */}
-              {/* <Card>
+                {/* Trade Analyzer */}
+                {/* <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Scale className="h-4 w-4" /> Trade Analyzer
@@ -193,8 +195,8 @@ export default async function FantasyDashboard({
                 </CardContent>
               </Card> */}
 
-              {/* Injuries & News */}
-              {/* <Card>
+                {/* Injuries & News */}
+                {/* <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <ShieldAlert className="h-4 w-4" /> Key Injuries & News
@@ -218,8 +220,8 @@ export default async function FantasyDashboard({
                 </CardContent>
               </Card> */}
 
-              {/* Bye Week Planner */}
-              {/* <Card>
+                {/* Bye Week Planner */}
+                {/* <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <CalendarDays className="h-4 w-4" /> Bye Week Planner
@@ -237,11 +239,12 @@ export default async function FantasyDashboard({
                   </div>
                 </CardContent>
               </Card> */}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </TooltipProvider>
+      </TooltipProvider>
+    </ErrorBoundary>
   );
 }
 
