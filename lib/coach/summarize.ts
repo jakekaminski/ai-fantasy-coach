@@ -4,8 +4,6 @@ import { CoachBriefLLMSchema, type CoachBriefLLM } from "@/types/coach.llm";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
-
 export async function summarizeCoachBrief(brief: {
   week: number;
   teamName: string;
@@ -56,6 +54,9 @@ export async function summarizeCoachBrief(brief: {
     mismatches: brief.mismatches,
     streamers: brief.streamers,
   };
+
+  // Lazy-initialize client so it's only instantiated at request time, not build time
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
   // Optional: runtime timeout
   const ac = new AbortController();
