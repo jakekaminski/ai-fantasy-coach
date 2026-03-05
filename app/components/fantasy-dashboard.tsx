@@ -5,18 +5,22 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TEAM_ID } from "@/lib/espn/fetchers";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  BarChart3,
   ChartPie,
   ChevronRight,
   LineChart,
   ListChecks,
   Shuffle,
   Table2,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import Filters from "../../components/dashboard/filters.client";
 import CoachBriefing from "./coach-briefing";
 import MatchupTable from "./matchup-table";
+import PlayoffSim from "./playoff-sim";
 import ProjectionsChart from "./projections-chart";
 import WinProbabilityChart from "./win-probability-chart";
 
@@ -68,8 +72,7 @@ export default async function FantasyDashboard({
                 title="Season Projections"
                 icon={<LineChart className="h-4 w-4" />}
               >
-                <ProjectionsChart />
-                {/* <Tabs defaultValue="projections">
+                <Tabs defaultValue="projections">
                   <TabsList>
                     <TabsTrigger value="projections" className="gap-2">
                       <TrendingUp className="h-4 w-4" /> Projections
@@ -91,18 +94,10 @@ export default async function FantasyDashboard({
                     />
                     <Placeholder height="h-48" label="Head-to-head heatmap" />
                   </TabsContent>
-
                   <TabsContent value="sim" className="space-y-4 pt-4">
-                    <Placeholder
-                      height="h-56"
-                      label="Monte Carlo playoff odds"
-                    />
-                    <Placeholder
-                      height="h-48"
-                      label="Likely seeding bar chart"
-                    />
+                    <PlayoffSim teamId={teamId} />
                   </TabsContent>
-                </Tabs> */}
+                </Tabs>
               </Section>
             </div>
 
