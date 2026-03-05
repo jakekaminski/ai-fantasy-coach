@@ -445,6 +445,33 @@ export interface TeamDTO {
   // Add other ESPN team fields as needed
 }
 
+/** -----------------------------
+ *  Monte Carlo Simulation
+ *  -----------------------------
+ */
+
+export interface SimulationResult {
+  teamId: number;
+  teamName: string;
+  currentWins: number;
+  currentLosses: number;
+  avgProjectedWins: number;
+  avgProjectedLosses: number;
+  playoffProbability: number;
+  projectedSeed: number;
+  seedDistribution: Record<number, number>;
+  championshipProbability: number;
+  magicNumber: number | null;
+}
+
+export interface SimulationOutput {
+  results: SimulationResult[];
+  simulationCount: number;
+  playoffSpots: number;
+  currentWeek: number;
+  totalWeeks: number;
+}
+
 export interface SeasonBundleDTO {
   seasonId: number;
   status: {
