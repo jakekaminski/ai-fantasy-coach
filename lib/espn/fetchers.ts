@@ -1,4 +1,5 @@
 import {
+  FreeAgentBundle,
   PositionalRatingsBundle,
   SeasonBundle,
   StaticBundle,
@@ -66,4 +67,32 @@ export async function getTeam() {
 export async function getSeasonBundle() {
   "use cache";
   return fetchLeague<SeasonBundle>(["mMatchupScore"]);
+}
+
+export async function fetchFreeAgents(
+  limit = 50,
+  offset = 0
+): Promise<FreeAgentBundle> {
+  const url = buildLeagueUrl(["kona_player_info"]);
+  const filter = {
+    players: {
+      filterStatus: { value: ["FREEAGENT", "WAIVERS"] },
+      filterSlotIds: { value: [0, 2, 4, 6, 16, 17, 23] },
+      filterRanksForScoringPeriodIds: { value: [YEAR] },
+      sortPercOwned: { sortPriority: 1, sortAsc: false },
+      limit,
+      offset,
+    },
+  };
+  const res = await fetch(url, {
+    headers: {
+      "x-fantasy-filter": JSON.stringify(filter),
+      Cookie: `SWID=${SWID}; espn_s2=${ESPNS2}`,
+    },
+    cache: "no-cache",
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch free agents: ${res.statusText}`);
+  }
+  return res.json();
 }

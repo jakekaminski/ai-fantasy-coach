@@ -448,6 +448,30 @@ export interface TeamDTO {
   // Add other ESPN team fields as needed
 }
 
+/** -----------------------------
+ *  Free Agent / Waivers
+ *  -----------------------------
+ */
+
+export interface FreeAgentEntry {
+  id: number;
+  onTeamId: number;
+  player: PlayerCardRaw;
+  status: "FREEAGENT" | "WAIVERS" | string;
+  ratings?: Record<
+    string,
+    {
+      positionalRanking: number;
+      totalRanking: number;
+      totalRating: number;
+    }
+  >;
+}
+
+export type FreeAgentBundle = LeagueBase & {
+  players: FreeAgentEntry[];
+};
+
 export interface SeasonBundleDTO {
   seasonId: number;
   status: {
