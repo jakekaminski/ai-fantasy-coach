@@ -404,6 +404,9 @@ export interface PlayerCard {
   projectedPoints: number;
   actualPoints: number;
   bench: boolean;
+  injuryStatus?: string;
+  lineupSlotId?: number;
+  projectedStats?: { yards?: number; tds?: number };
 }
 
 export interface MatchupDTO {

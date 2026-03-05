@@ -79,6 +79,8 @@ function mapRosterToCards(
       e.playerPoolEntry.appliedStatTotal ??
       0;
 
+    const projectedStats = extractProjectedStats(proj, p.defaultPositionId);
+
     return {
       id: p.id,
       name,
@@ -87,8 +89,37 @@ function mapRosterToCards(
       projectedPoints,
       actualPoints,
       bench: e.lineupSlotId === 20,
+      injuryStatus: e.injuryStatus ?? p.injuryStatus ?? undefined,
+      lineupSlotId: e.lineupSlotId,
+      projectedStats,
     };
   });
+}
+
+/**
+ * Extract key projected stats (yards, TDs) from a projection stat line.
+ * ESPN stat IDs: 3=pass yds, 4=pass TDs, 24=rush yds, 25=rush TDs, 42=rec yds, 43=rec TDs.
+ */
+function extractProjectedStats(
+  proj: PlayerStatLine | undefined,
+  positionId: number
+): { yards?: number; tds?: number } | undefined {
+  if (!proj?.stats) return undefined;
+  const s = proj.stats;
+  const num = (key: string) => Number(s[key]) || 0;
+
+  switch (positionId) {
+    case 1: // QB
+      return { yards: num("3"), tds: num("4") };
+    case 2: // RB
+      return { yards: num("24") + num("42"), tds: num("25") + num("43") };
+    case 3: // WR
+      return { yards: num("42") + num("24"), tds: num("43") + num("25") };
+    case 4: // TE
+      return { yards: num("42"), tds: num("43") };
+    default:
+      return undefined;
+  }
 }
 
 /**
