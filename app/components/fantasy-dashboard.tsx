@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Filters from "../../components/dashboard/filters.client";
 import CoachBriefing from "./coach-briefing";
+import MatchupBreakdown from "./matchup-breakdown";
 import MatchupTable from "./matchup-table";
 import ProjectionsChart from "./projections-chart";
 import WinProbabilityChart from "./win-probability-chart";
@@ -62,6 +63,9 @@ export default async function FantasyDashboard({
               {/* Matchup Table */}
               <Section title="Matchups" icon={<Table2 className="h-4 w-4" />}>
                 <MatchupTable week={week} />
+                <div className="mt-4 border-t pt-4">
+                  <MatchupBreakdown week={week} teamId={teamId} />
+                </div>
               </Section>
 
               <Section
