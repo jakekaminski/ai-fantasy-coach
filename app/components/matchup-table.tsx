@@ -39,7 +39,7 @@ export default async function MatchupTable({ week }: Props) {
   );
 
   return (
-    <Table>
+    <Table className="min-w-[540px]">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[30%]">Home</TableHead>
