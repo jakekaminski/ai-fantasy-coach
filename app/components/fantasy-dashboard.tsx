@@ -3,17 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TEAM_ID } from "@/lib/espn/fetchers";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  BarChart3,
   ChartPie,
   LineChart,
   ListChecks,
   Shuffle,
   Table2,
+  TrendingUp,
 } from "lucide-react";
 import Filters from "../../components/dashboard/filters.client";
 import CoachBriefing from "./coach-briefing";
 import MatchupBreakdown from "./matchup-breakdown";
 import MatchupTable from "./matchup-table";
+import PlayoffSim from "./playoff-sim";
 import MobileBottomNav from "./mobile-bottom-nav";
 import ProjectionsChart from "./projections-chart";
 import WaiverWire from "./waiver-wire";
@@ -80,7 +84,32 @@ export default async function FantasyDashboard({
                 title="Season Projections"
                 icon={<LineChart className="h-4 w-4" />}
               >
-                <ProjectionsChart />
+                <Tabs defaultValue="projections">
+                  <TabsList>
+                    <TabsTrigger value="projections" className="gap-2">
+                      <TrendingUp className="h-4 w-4" /> Projections
+                    </TabsTrigger>
+                    <TabsTrigger value="history" className="gap-2">
+                      <LineChart className="h-4 w-4" /> History
+                    </TabsTrigger>
+                    <TabsTrigger value="sim" className="gap-2">
+                      <BarChart3 className="h-4 w-4" /> Playoff Sims
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="projections" className="space-y-4 pt-4">
+                    <ProjectionsChart />
+                  </TabsContent>
+                  <TabsContent value="history" className="space-y-4 pt-4">
+                    <Placeholder
+                      height="h-64"
+                      label="Weekly scores line chart per team"
+                    />
+                    <Placeholder height="h-48" label="Head-to-head heatmap" />
+                  </TabsContent>
+                  <TabsContent value="sim" className="space-y-4 pt-4">
+                    <PlayoffSim teamId={teamId} />
+                  </TabsContent>
+                </Tabs>
               </Section>
             </div>
 
@@ -158,6 +187,16 @@ function Section({
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
+  );
+}
+
+function Placeholder({ height, label }: { height: string; label: string }) {
+  return (
+    <div
+      className={`flex ${height} items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground`}
+    >
+      {label}
+    </div>
   );
 }
 
