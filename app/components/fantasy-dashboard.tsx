@@ -1,8 +1,6 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TEAM_ID } from "@/lib/espn/fetchers";
 import {
@@ -12,12 +10,12 @@ import {
   ListChecks,
   Shuffle,
   Table2,
-  Users,
 } from "lucide-react";
 import Filters from "../../components/dashboard/filters.client";
 import CoachBriefing from "./coach-briefing";
 import MatchupTable from "./matchup-table";
 import ProjectionsChart from "./projections-chart";
+import WaiverWire from "./waiver-wire";
 import WinProbabilityChart from "./win-probability-chart";
 
 export default async function FantasyDashboard({
@@ -140,38 +138,7 @@ export default async function FantasyDashboard({
               </Card>
 
               {/* Waiver Wire */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Users className="h-4 w-4" /> Waiver Wire Targets
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-56">
-                    <div className="space-y-3 text-sm">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between rounded-lg border p-2"
-                        >
-                          <div className="flex flex-col">
-                            <span className="font-medium">Player {i} · WR</span>
-                            <span className="text-xs text-muted-foreground">
-                              Next week: 12.4 proj · ROS: 8.1 avg
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">Fit +72%</Badge>
-                            <Button size="sm" variant="secondary">
-                              Claim
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+              <WaiverWire week={week} teamId={teamId} />
 
               {/* Trade Analyzer */}
               {/* <Card>
