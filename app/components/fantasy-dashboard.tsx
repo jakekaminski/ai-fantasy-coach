@@ -221,3 +221,13 @@ function Section({
   );
 }
 
+function Placeholder({ height, label }: { height: string; label: string }) {
+  return (
+    <div
+      className={`flex ${height} items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground`}
+    >
+      {label}
+    </div>
+  );
+}
+
