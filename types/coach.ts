@@ -48,6 +48,48 @@ export type DvpRanks = {
   [teamId: number]: Partial<Record<PositionLabel, number>>;
 };
 
+export type WaiverRecommendation = {
+  player: {
+    id: number;
+    name: string;
+    position: PositionLabel;
+    team: string;
+    proTeamId: number;
+  };
+  projectedPoints: number;
+  recentAvg: number;
+  seasonAvg: number;
+  trend: number;
+  matchupRating: number;
+  positionalNeed: number;
+  compositeScore: number;
+  reason: string;
+  dropCandidate?: {
+    name: string;
+    position: string;
+    projectedPoints: number;
+  };
+  faabRecommendation?: number;
+};
+
+export type WaiverAnalysis = {
+  week: number;
+  recommendations: WaiverRecommendation[];
+  usesFaab: boolean;
+  faabRemaining?: number;
+};
+
+export type WaiverSummaryLLM = {
+  headline: string;
+  moves: Array<{
+    pickup: string;
+    drop?: string;
+    reason: string;
+    faab?: number;
+  }>;
+  summary: string;
+};
+
 export type CoachBriefLLM = {
   headline: string; // "You’ve got a path if you swap WR2"
   bullets: string[]; // 3–6 short actionable bullets

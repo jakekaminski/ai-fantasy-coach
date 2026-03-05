@@ -404,6 +404,9 @@ export interface PlayerCard {
   projectedPoints: number;
   actualPoints: number;
   bench: boolean;
+  injuryStatus?: string;
+  lineupSlotId?: number;
+  projectedStats?: { yards?: number; tds?: number };
 }
 
 export interface MatchupDTO {
@@ -471,6 +474,30 @@ export interface SimulationOutput {
   currentWeek: number;
   totalWeeks: number;
 }
+
+/** -----------------------------
+ *  Free Agent / Waivers
+ *  -----------------------------
+ */
+
+export interface FreeAgentEntry {
+  id: number;
+  onTeamId: number;
+  player: PlayerCardRaw;
+  status: "FREEAGENT" | "WAIVERS" | string;
+  ratings?: Record<
+    string,
+    {
+      positionalRanking: number;
+      totalRanking: number;
+      totalRating: number;
+    }
+  >;
+}
+
+export type FreeAgentBundle = LeagueBase & {
+  players: FreeAgentEntry[];
+};
 
 export interface SeasonBundleDTO {
   seasonId: number;
