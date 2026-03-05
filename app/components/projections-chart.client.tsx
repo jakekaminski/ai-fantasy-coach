@@ -1,6 +1,7 @@
 "use client";
 
 import { ChartContainer } from "@/components/ui/chart";
+import { useIsMobile } from "@/hooks/use-mobile";
 import * as React from "react";
 
 type Props = {
@@ -137,8 +138,9 @@ export default function ProjectionsChartClient({
     }
   }
 
-  // Layout constants
-  const labelColWidth = 112; // ~ w-28
+  const isMobile = useIsMobile();
+
+  const labelColWidth = isMobile ? 72 : 112;
   const headerHeight = 28;
   const legendHeight = 28;
   const availableRows = Math.max(teams.length, 1);
@@ -154,15 +156,19 @@ export default function ProjectionsChartClient({
     )
   );
 
+  const showWeekLabel = (w: number) => !isMobile || w % 2 === 1;
+
   return (
     <ChartContainer
-      // ChartContainer config not used for heatmap colors, but keeps padding/border consistent
       config={{}}
-      className="w-full rounded-md border p-2"
+      className="w-full overflow-x-auto rounded-md border p-2"
       style={{ height }}
     >
-      <div className="flex h-full w-full flex-col">
-        {/* Header row: [label gap] + week labels spanning columns */}
+      <div
+        className="flex h-full w-full flex-col"
+        style={{ minWidth: isMobile ? weeks.length * 28 + labelColWidth : undefined }}
+      >
+        {/* Header row */}
         <div
           className="grid items-center gap-1 px-2 pb-2"
           style={{
@@ -181,15 +187,15 @@ export default function ProjectionsChartClient({
               className="text-center text-xs font-medium text-muted-foreground"
               style={{ height: headerHeight }}
             >
-              W{w}
+              {showWeekLabel(w) ? `W${w}` : ""}
             </div>
           ))}
         </div>
 
-        {/* Body rows: each is a two-part grid [label | cells...] */}
+        {/* Body rows */}
         <div className="flex-1 overflow-auto">
           <div
-            className="grid gap-2"
+            className="grid gap-1 sm:gap-2"
             style={{
               gridTemplateRows: `repeat(${teams.length}, ${rowHeight}px)`,
             }}
@@ -200,11 +206,11 @@ export default function ProjectionsChartClient({
                 className="grid items-stretch"
                 style={{ gridTemplateColumns: `${labelColWidth}px 1fr` }}
               >
-                {/* Team label at left */}
-                <div className="flex items-center px-2 text-xs">{team}</div>
-                {/* Week cells fill remaining width equally */}
+                <div className="flex items-center px-1 text-xs truncate sm:px-2">
+                  {team}
+                </div>
                 <div
-                  className="grid gap-2"
+                  className="grid gap-1 sm:gap-2"
                   style={{
                     gridTemplateColumns: `repeat(${weeks.length}, 1fr)`,
                   }}
@@ -226,7 +232,7 @@ export default function ProjectionsChartClient({
                             : `${val?.toFixed?.(1) ?? "–"} pts`
                         }`}
                       >
-                        <span className="text-[10px] font-medium text-background/90">
+                        <span className="text-[10px] font-medium text-background/90 hidden sm:inline">
                           {mode === "rank"
                             ? val ?? "–"
                             : Number.isFinite(val)
