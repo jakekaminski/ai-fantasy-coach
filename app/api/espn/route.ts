@@ -7,6 +7,7 @@ export async function GET() {
       "/api/espn/season",
       "/api/espn/live",
       "/api/espn/tx",
+      "/api/espn/waivers",
     ],
     hint: "Append ?pretty=1 for indented JSON",
   });
