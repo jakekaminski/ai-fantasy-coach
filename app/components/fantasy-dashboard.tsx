@@ -7,7 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { TEAM_ID } from "@/lib/espn/fetchers";
 import {
   ChartPie,
-  ChevronRight,
   LineChart,
   ListChecks,
   Shuffle,
@@ -17,6 +16,7 @@ import {
 import Filters from "../../components/dashboard/filters.client";
 import CoachBriefing from "./coach-briefing";
 import MatchupTable from "./matchup-table";
+import MobileBottomNav from "./mobile-bottom-nav";
 import ProjectionsChart from "./projections-chart";
 import WinProbabilityChart from "./win-probability-chart";
 
@@ -42,10 +42,13 @@ export default async function FantasyDashboard({
           initialLiveOnly={live}
         />
         {/* Content */}
-        <div className="mx-auto max-w-7xl px-4 py-6 lg:px-6 lg:py-8">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="mx-auto max-w-7xl px-4 pb-20 pt-6 md:pb-6 lg:px-6 lg:py-8">
+          <div
+            id="section-dashboard"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          >
             {/* LEFT COLUMN */}
-            <div className="space-y-6 lg:col-span-2">
+            <div className="space-y-6 md:col-span-2 lg:col-span-2">
               {/* Win Probability Grid */}
               <Section
                 title="Win Probability"
@@ -60,186 +63,105 @@ export default async function FantasyDashboard({
               </Section>
 
               {/* Matchup Table */}
-              <Section title="Matchups" icon={<Table2 className="h-4 w-4" />}>
-                <MatchupTable week={week} />
-              </Section>
+              <div id="section-matchups">
+                <Section
+                  title="Matchups"
+                  icon={<Table2 className="h-4 w-4" />}
+                >
+                  <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+                    <MatchupTable week={week} />
+                  </div>
+                </Section>
+              </div>
 
               <Section
                 title="Season Projections"
                 icon={<LineChart className="h-4 w-4" />}
               >
                 <ProjectionsChart />
-                {/* <Tabs defaultValue="projections">
-                  <TabsList>
-                    <TabsTrigger value="projections" className="gap-2">
-                      <TrendingUp className="h-4 w-4" /> Projections
-                    </TabsTrigger>
-                    <TabsTrigger value="history" className="gap-2">
-                      <LineChart className="h-4 w-4" /> History
-                    </TabsTrigger>
-                    <TabsTrigger value="sim" className="gap-2">
-                      <BarChart3 className="h-4 w-4" /> Playoff Sims
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="projections" className="space-y-4 pt-4">
-                    <ProjectionsChart />
-                  </TabsContent>
-                  <TabsContent value="history" className="space-y-4 pt-4">
-                    <Placeholder
-                      height="h-64"
-                      label="Weekly scores line chart per team"
-                    />
-                    <Placeholder height="h-48" label="Head-to-head heatmap" />
-                  </TabsContent>
-
-                  <TabsContent value="sim" className="space-y-4 pt-4">
-                    <Placeholder
-                      height="h-56"
-                      label="Monte Carlo playoff odds"
-                    />
-                    <Placeholder
-                      height="h-48"
-                      label="Likely seeding bar chart"
-                    />
-                  </TabsContent>
-                </Tabs> */}
               </Section>
             </div>
 
             {/* RIGHT COLUMN */}
-            <div className="space-y-6">
-              {/* AI Coach Summary */}
-              <CoachBriefing
-                week={week}
-                teamId={teamId}
-                risk={risk}
-                live={live}
-              />
+            <div className="space-y-6 md:col-span-2 lg:col-span-1">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-1">
+                {/* AI Coach Summary */}
+                <div id="section-coach">
+                  <CoachBriefing
+                    week={week}
+                    teamId={teamId}
+                    risk={risk}
+                    live={live}
+                  />
+                </div>
 
-              {/* Start/Sit Optimizer */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <ListChecks className="h-4 w-4" /> Start/Sit Optimizer
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-3">
-                    <Input placeholder="e.g., Swap WR3? Add bench RB?" />
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Shuffle className="h-4 w-4" /> AI recommends:{" "}
-                      <span className="font-medium text-foreground">
-                        WR X → FLEX, RB Y → Bench
-                      </span>
-                    </div>
-                    <Button size="sm" className="self-start">
-                      Optimize Lineup
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Waiver Wire */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Users className="h-4 w-4" /> Waiver Wire Targets
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-56">
-                    <div className="space-y-3 text-sm">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between rounded-lg border p-2"
-                        >
-                          <div className="flex flex-col">
-                            <span className="font-medium">Player {i} · WR</span>
-                            <span className="text-xs text-muted-foreground">
-                              Next week: 12.4 proj · ROS: 8.1 avg
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">Fit +72%</Badge>
-                            <Button size="sm" variant="secondary">
-                              Claim
-                            </Button>
-                          </div>
+                {/* Start/Sit Optimizer */}
+                <div id="section-optimizer">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <ListChecks className="h-4 w-4" /> Start/Sit Optimizer
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 gap-3">
+                        <Input placeholder="e.g., Swap WR3? Add bench RB?" />
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Shuffle className="h-4 w-4" /> AI recommends:{" "}
+                          <span className="font-medium text-foreground">
+                            WR X → FLEX, RB Y → Bench
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                        <Button size="sm" className="self-start">
+                          Optimize Lineup
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-              {/* Trade Analyzer */}
-              {/* <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Scale className="h-4 w-4" /> Trade Analyzer
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input placeholder="You give (comma-separated)" />
-                    <Input placeholder="You get (comma-separated)" />
-                  </div>
-                  <Button size="sm">Evaluate Trade</Button>
-                  <div className="text-xs text-muted-foreground">
-                    AI will summarize short-term gain, playoff impact, and
-                    positional depth.
-                  </div>
-                </CardContent>
-              </Card> */}
-
-              {/* Injuries & News */}
-              {/* <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <ShieldAlert className="h-4 w-4" /> Key Injuries & News
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-start gap-2">
-                      <AlarmClockCheck className="mt-0.5 h-4 w-4" />
-                      <span>
-                        <b>RB Z</b> (ankle) DNP Thu — downgrade if limited Fri.
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <AlarmClockCheck className="mt-0.5 h-4 w-4" />
-                      <span>
-                        <b>WR Y</b> (hamstring) limited — boom/bust if active.
-                      </span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card> */}
-
-              {/* Bye Week Planner */}
-              {/* <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <CalendarDays className="h-4 w-4" /> Bye Week Planner
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Activity className="h-4 w-4" /> Upcoming gaps: RB (Wk 7),
-                    WR (Wk 9)
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Placeholder label="Mini calendar heatmap" />
-                    <Placeholder label="Position coverage chips" />
-                    <Placeholder label="AI suggestions" />
-                  </div>
-                </CardContent>
-              </Card> */}
+                {/* Waiver Wire */}
+                <div id="section-waivers" className="md:col-span-2 lg:col-span-1">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <Users className="h-4 w-4" /> Waiver Wire Targets
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ScrollArea className="h-56">
+                        <div className="space-y-3 text-sm">
+                          {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div
+                              key={i}
+                              className="flex items-center justify-between rounded-lg border p-2"
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-medium">
+                                  Player {i} · WR
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  Next week: 12.4 proj · ROS: 8.1 avg
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline">Fit +72%</Badge>
+                                <Button size="sm" variant="secondary">
+                                  Claim
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <MobileBottomNav />
       </div>
     </TooltipProvider>
   );
@@ -270,15 +192,3 @@ function Section({
   );
 }
 
-function Placeholder({ label, height }: { label: string; height?: string }) {
-  return (
-    <div
-      className={`flex w-full items-center justify-between rounded-xl border bg-muted/30 px-4 ${
-        height ?? "h-32"
-      }`}
-    >
-      <div className="py-4 text-sm text-muted-foreground">{label}</div>
-      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-    </div>
-  );
-}

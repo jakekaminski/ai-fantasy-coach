@@ -7,10 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { buildCoachBrief } from "@/lib/coach/buildBrief";
 import { cn } from "@/lib/utils";
 import { CoachBriefLLM } from "@/types/coach";
-import { RefreshCw, Sparkle } from "lucide-react";
+import { ChevronDown, RefreshCw, Sparkle } from "lucide-react";
 import { useActionState, useEffect, useMemo, useState } from "react";
 
 export default function CoachBriefingClient({
@@ -69,15 +70,36 @@ export default function CoachBriefingClient({
   }, [ai, error, storageKey]);
   // --- end cache wiring ---
 
+  const isMobile = useIsMobile();
+  const [expanded, setExpanded] = useState(true);
+
+  useEffect(() => {
+    setExpanded(!isMobile);
+  }, [isMobile]);
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader
+        className={cn(isMobile && "cursor-pointer")}
+        onClick={isMobile ? () => setExpanded((v) => !v) : undefined}
+      >
         <CardTitle className="flex items-center gap-2 text-base">
           <Sparkle className="h-4 w-4" /> AI Coach
+          {isMobile && (
+            <ChevronDown
+              className={cn(
+                "ml-auto h-4 w-4 transition-transform",
+                expanded && "rotate-180"
+              )}
+            />
+          )}
         </CardTitle>
         <CardAction>
-          <form action={formAction} className="inline-flex items-center">
-            {/* Pass deterministic JSON to the Server Action via hidden input */}
+          <form
+            action={formAction}
+            className="inline-flex items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <input
               type="hidden"
               name="deterministic"
@@ -96,54 +118,66 @@ export default function CoachBriefingClient({
           </form>
         </CardAction>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {cached.error ? (
-          <div className="rounded border border-destructive/40 bg-destructive/10 p-4">
-            <h2 className="text-lg font-semibold text-destructive">
-              {cached.error}
-            </h2>
-          </div>
-        ) : cached.ai && (cached.ai.headline || cached.ai.bullets?.length) ? (
-          <div className="rounded border bg-accent p-4">
-            <h2 className="text-lg font-semibold">{cached.ai.headline}</h2>
-            {!!cached.ai.bullets?.length && (
-              <ul className="list-inside list-disc">
-                {cached.ai.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200",
+          expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        )}
+      >
+        <div className="overflow-hidden">
+          <CardContent className="space-y-2">
+            {cached.error ? (
+              <div className="rounded border border-destructive/40 bg-destructive/10 p-4">
+                <h2 className="text-lg font-semibold text-destructive">
+                  {cached.error}
+                </h2>
+              </div>
+            ) : cached.ai &&
+              (cached.ai.headline || cached.ai.bullets?.length) ? (
+              <div className="rounded border bg-accent p-4">
+                <h2 className="text-lg font-semibold">
+                  {cached.ai.headline}
+                </h2>
+                {!!cached.ai.bullets?.length && (
+                  <ul className="list-inside list-disc">
+                    {cached.ai.bullets.map((b, i) => (
+                      <li key={i}>{b}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                Press Refresh to generate the AI coach brief.
+              </div>
             )}
-          </div>
-        ) : (
-          <div className="text-sm text-muted-foreground">
-            Press Refresh to generate the AI coach brief.
-          </div>
-        )}
 
-        {!cached.error && !!cached.ai?.moves?.length && (
-          <>
-            <div className="mt-3 text-sm font-medium">Suggested Moves</div>
-            <ul className="list-inside list-disc text-sm">
-              {cached.ai.moves.map((m, i) => (
-                <li key={i}>
-                  {m.label}
-                  {m.reason ? ` — ${m.reason}` : ""}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+            {!cached.error && !!cached.ai?.moves?.length && (
+              <>
+                <div className="mt-3 text-sm font-medium">Suggested Moves</div>
+                <ul className="list-inside list-disc text-sm">
+                  {cached.ai.moves.map((m, i) => (
+                    <li key={i}>
+                      {m.label}
+                      {m.reason ? ` — ${m.reason}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
 
-        {/* transparency toggle */}
-        <details className="mt-4">
-          <summary className="cursor-pointer text-xs text-muted-foreground">
-            Show data used
-          </summary>
-          <pre className="mt-2 max-h-64 overflow-auto rounded bg-muted p-2 text-xs">
-            {JSON.stringify(deterministic, null, 2)}
-          </pre>
-        </details>
-      </CardContent>
+            {/* transparency toggle */}
+            <details className="mt-4">
+              <summary className="cursor-pointer text-xs text-muted-foreground">
+                Show data used
+              </summary>
+              <pre className="mt-2 max-h-64 overflow-auto rounded bg-muted p-2 text-xs">
+                {JSON.stringify(deterministic, null, 2)}
+              </pre>
+            </details>
+          </CardContent>
+        </div>
+      </div>
     </Card>
   );
 }
