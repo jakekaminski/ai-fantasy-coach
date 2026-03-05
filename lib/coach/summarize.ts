@@ -4,7 +4,11 @@ import { CoachBriefLLMSchema, type CoachBriefLLM } from "@/types/coach.llm";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+  return _openai;
+}
 
 export async function summarizeCoachBrief(brief: {
   week: number;
@@ -62,7 +66,7 @@ export async function summarizeCoachBrief(brief: {
   const t = setTimeout(() => ac.abort(), 5000);
 
   try {
-    const resp = await openai.responses.parse(
+    const resp = await getOpenAI().responses.parse(
       {
         model: "gpt-4o-mini",
         temperature: 0,
