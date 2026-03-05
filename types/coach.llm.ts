@@ -13,3 +13,18 @@ export const CoachBriefLLMSchema = z.object({
 });
 
 export type CoachBriefLLM = z.infer<typeof CoachBriefLLMSchema>;
+
+export const WaiverSummaryLLMSchema = z.object({
+  headline: z.string(),
+  moves: z.array(
+    z.object({
+      pickup: z.string(),
+      drop: z.string().optional(),
+      reason: z.string(),
+      faab: z.number().optional(),
+    })
+  ),
+  summary: z.string(),
+});
+
+export type WaiverSummaryLLM = z.infer<typeof WaiverSummaryLLMSchema>;
