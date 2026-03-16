@@ -56,6 +56,12 @@ export default function Filters({
           </div>
 
           <div className="flex flex-1 items-center justify-end gap-2">
+            <a
+              href="/bracket"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-orange-500 hover:bg-orange-500/10 transition-colors"
+            >
+              🏀 <span className="hidden sm:inline">Bracket</span>
+            </a>
             <Select
               value={week ?? String(initialWeek || 1)}
               onValueChange={(v) => setParam("week", v)}
